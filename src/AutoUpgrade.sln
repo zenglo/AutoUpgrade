@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.16
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zl.AutoUpgrade.Core", "Zl.AutoUpgrade.Core\Zl.AutoUpgrade.Core.csproj", "{A58CBF69-20A5-4C92-B47C-5C28C3E736F5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Zl.AutoUpgrade.Shared", "Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.shproj", "{1618087A-3CB4-45FA-84FF-1EA8B16BF7B6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "1.Common", "1.Common", "{35C59932-3931-403D-AABA-80D81FD22FB0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2.ForClient", "2.ForClient", "{77BA2A67-E3EC-4EAF-9C79-1874E4DF2F7A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3.ForServer", "3.ForServer", "{DEAF28E9-C2E3-4FA3-ABFA-5846B64B3D63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zl.AutoUpgrade.VersionInfoBuilder", "Zl.AutoUpgrade.VersionInfoBuilder\Zl.AutoUpgrade.VersionInfoBuilder.csproj", "{BF0BC324-A831-4316-A64A-F05BC2346C4A}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems*{1618087a-3cb4-45fa-84ff-1ea8b16bf7b6}*SharedItemsImports = 13
+		Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems*{a58cbf69-20a5-4c92-b47c-5c28c3e736f5}*SharedItemsImports = 4
+		Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems*{bf0bc324-a831-4316-a64a-f05bc2346c4a}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A58CBF69-20A5-4C92-B47C-5C28C3E736F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A58CBF69-20A5-4C92-B47C-5C28C3E736F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A58CBF69-20A5-4C92-B47C-5C28C3E736F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A58CBF69-20A5-4C92-B47C-5C28C3E736F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF0BC324-A831-4316-A64A-F05BC2346C4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF0BC324-A831-4316-A64A-F05BC2346C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF0BC324-A831-4316-A64A-F05BC2346C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF0BC324-A831-4316-A64A-F05BC2346C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A58CBF69-20A5-4C92-B47C-5C28C3E736F5} = {77BA2A67-E3EC-4EAF-9C79-1874E4DF2F7A}
+		{1618087A-3CB4-45FA-84FF-1EA8B16BF7B6} = {35C59932-3931-403D-AABA-80D81FD22FB0}
+		{BF0BC324-A831-4316-A64A-F05BC2346C4A} = {DEAF28E9-C2E3-4FA3-ABFA-5846B64B3D63}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0F8E21A1-252B-45D5-8FF7-55487E849BC8}
+	EndGlobalSection
+EndGlobal
