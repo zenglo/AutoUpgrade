@@ -41,7 +41,7 @@ namespace Zl.AutoUpgrade.Shared
                     {
                         string filePath = System.IO.Path.Combine(directoryInfo.FullName, item.File.TrimStart('\\', '/'));
                         FileInfo fileInfo = new FileInfo(filePath);
-                        if (File.Exists(filePath))
+                        if (!File.Exists(filePath))
                         {
                             return false;
                         }

@@ -25,9 +25,9 @@ namespace Zl.AutoUpgrade.Core
         /// </summary>
         public string FtpPassword { get; set; }
         /// <summary>
-        /// ftp ssl 协议
+        /// 是否使用TLS协议连接ftp
         /// </summary>
-        public SslProtocols FtpSslProtocols { get; set; }
+        public bool FtpOverTLS { get; set; }
         /// <summary>
         /// 当检测到新版后是否自动升级
         /// </summary>

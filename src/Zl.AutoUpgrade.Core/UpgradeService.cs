@@ -17,7 +17,7 @@ namespace Zl.AutoUpgrade.Core
         private string _ftpServerIp;
         private string _ftpUser;
         private string _ftpPassword;
-        private SslProtocols _ftpSslProtocols;
+        private bool _ftpOverTLS;
         private VersionService _versionService;
         private const string VersionFileName = "versionInfo.xml";
         private static readonly string NewVersionTempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "newVersionTemp");
@@ -38,7 +38,7 @@ namespace Zl.AutoUpgrade.Core
             this._ftpServerIp = config.FtpHost;
             this._ftpUser = config.FtpUser;
             this._ftpPassword = config.FtpPassword;
-            this._ftpSslProtocols = config.FtpSslProtocols;
+            this._ftpOverTLS = config.FtpOverTLS;
             _versionService = new VersionService(config.VersionInfoSecretKey ?? "Zl.AutoUpgrade.SecretKey");
         }
 
@@ -195,10 +195,20 @@ namespace Zl.AutoUpgrade.Core
 
         private FtpClient CreateFtpClient()
         {
-            FtpClient client = new FtpClient(_ftpServerIp);
-            client.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
-            client.SslProtocols = _ftpSslProtocols;
+            FtpClient client = new FtpClient(_ftpServerIp, _ftpUser, _ftpPassword);
+            client.DataConnectionType = FtpDataConnectionType.AutoActive;
+            if (_ftpOverTLS)
+            {
+                client.EncryptionMode = FtpEncryptionMode.Explicit;
+                client.SslProtocols = SslProtocols.Tls;
+                client.ValidateCertificate += new FtpSslValidation(OnValidateCertificate);
+            }
             return client;
+        }
+        private void OnValidateCertificate(FtpClient control, FtpSslValidationEventArgs e)
+        {
+            // add logic to test if certificate is valid here
+            e.Accept = true;
         }
 
         private PackageVersionInfo GetDifferenceVersionInfoWithServer(FtpClient client)
