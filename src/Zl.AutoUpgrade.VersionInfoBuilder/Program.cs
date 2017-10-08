@@ -22,7 +22,7 @@ namespace Zl.AutoUpgrade.VersionInfoBuilder
                 if (command.Help != null)
                 {
                     var help = new Args.Help.HelpProvider().GenerateModelHelp(definition);
-                    var f = new ConsoleHelpFormatter(80, 1, 5);;
+                    var f = new ConsoleHelpFormatter(80, 1, 5);
                     Console.WriteLine(f.GetHelp(help));
                     return;
                 }

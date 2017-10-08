@@ -56,8 +56,8 @@ namespace Zl.AutoUpgrade.Core
         {
             using (FtpClient client = this.CreateFtpClient())
             {
-                PackageVersionInfo needUpdateVersionInfo = GetNeedVersionInfo(client);
-                return needUpdateVersionInfo != null && needUpdateVersionInfo.Files.Length > 0;
+                PackageVersionInfo diffVersionInfo = GetDifferenceVersionInfoWithServer(client);
+                return diffVersionInfo != null && diffVersionInfo.Files.Length > 0;
             }
         }
 
@@ -65,17 +65,17 @@ namespace Zl.AutoUpgrade.Core
         {
             using (FtpClient client = this.CreateFtpClient())
             {
-                PackageVersionInfo needUpdateVersionInfo = GetNeedVersionInfo(client);
-                if (needUpdateVersionInfo == null || needUpdateVersionInfo.Files.Length == 0)
+                PackageVersionInfo diffVersionInfo = GetDifferenceVersionInfoWithServer(client);
+                if (diffVersionInfo == null || diffVersionInfo.Files.Length == 0)
                 {
                     return false;
                 }
-                UpgradeNow(client, needUpdateVersionInfo);
+                UpgradeNow(client, diffVersionInfo);
                 return true;
             }
         }
 
-        private void UpgradeNow(FtpClient client, PackageVersionInfo needUpdateVersionInfo)
+        private void UpgradeNow(FtpClient client, PackageVersionInfo diffVersionInfo)
         {
             this.RaiseUpgradeStarted();
             float percent = 0f;
@@ -87,12 +87,12 @@ namespace Zl.AutoUpgrade.Core
             {
                 client.RetryAttempts = 3;
                 long downLength = 0;
-                foreach (var item in needUpdateVersionInfo.Files)
+                foreach (var item in diffVersionInfo.Files)
                 {
                     curentDownFile = item.File;
                     client.DownloadFile(Path.Combine(newVersionTemp.FullName, item.File.TrimStart('\\', '/')), item.File.Replace('\\', '/'), true, FtpVerify.Retry);
                     downLength += item.Length;
-                    this.RaiseUpgradeProgress(percent += (float)Math.Round((downLength * 1.0 / needUpdateVersionInfo.TotalLength * 0.9), 2));
+                    this.RaiseUpgradeProgress(percent += (float)Math.Round((downLength * 1.0 / diffVersionInfo.TotalLength * 0.9), 2));
                 }
             }
             catch (Exception exc)
@@ -105,7 +105,7 @@ namespace Zl.AutoUpgrade.Core
             //验证文件合法性，防篡改，占比 1%
             try
             {
-                if (!this._versionService.Verify(needUpdateVersionInfo, newVersionTemp.FullName))
+                if (!this._versionService.Verify(diffVersionInfo, newVersionTemp.FullName))
                 {
                     string msg = "新版文件不合法";
                     Exception nexc = new UnlawfulException(msg, null);
@@ -128,18 +128,7 @@ namespace Zl.AutoUpgrade.Core
             //备份当前版本，占比 3%
             try
             {
-                DirectoryInfo bakFolder = new DirectoryInfo(CurVersionBakFolder);
-                foreach (var item in needUpdateVersionInfo.Files)
-                {
-                    string filePath = Path.Combine(this._targetFolder, item.File.TrimStart('\\', '/'));
-                    if (!File.Exists(filePath))
-                    {
-                        continue;
-                    }
-                    string newFilePath = Path.Combine(bakFolder.FullName, item.File.TrimStart('\\', '/'));
-                    Directory.CreateDirectory(Directory.GetParent(newFilePath).FullName);
-                    File.Copy(filePath, newFilePath, true);
-                }
+                CopyVersionFile(diffVersionInfo, this._targetFolder, CurVersionBakFolder);
                 this.RaiseUpgradeProgress(percent += 0.03f);
             }
             catch (Exception exc)
@@ -152,15 +141,15 @@ namespace Zl.AutoUpgrade.Core
             //新版覆盖当前版，占比 4%
             try
             {
-                CopyDirectory(NewVersionTempFolder, this._targetFolder);
-                XmlSerializer.SaveToFile(needUpdateVersionInfo, Path.Combine(this._targetFolder, VersionFileName));
+                CopyVersionFile(diffVersionInfo, NewVersionTempFolder, this._targetFolder);
+                XmlSerializer.SaveToFile(diffVersionInfo, Path.Combine(this._targetFolder, VersionFileName));
                 this.RaiseUpgradeProgress(percent += 0.04f);
             }
             catch (Exception exc)
             {
                 try
                 {
-                    this.Rollback();
+                    CopyVersionFile(diffVersionInfo, CurVersionBakFolder, this._targetFolder);
                 }
                 catch (Exception exc1)
                 {
@@ -189,6 +178,20 @@ namespace Zl.AutoUpgrade.Core
             this.RaiseUpgradeEnded();
         }
 
+        private static void CopyVersionFile(PackageVersionInfo versionInfo, string sourceFolder, string toFolder)
+        {
+            foreach (var item in versionInfo.Files)
+            {
+                string filePath = Path.Combine(sourceFolder, item.File.TrimStart('\\', '/'));
+                if (!File.Exists(filePath))
+                {
+                    continue;
+                }
+                string newFilePath = Path.Combine(toFolder, item.File.TrimStart('\\', '/'));
+                Directory.CreateDirectory(Directory.GetParent(newFilePath).FullName);
+                File.Copy(filePath, newFilePath, true);
+            }
+        }
 
         private FtpClient CreateFtpClient()
         {
@@ -198,7 +201,7 @@ namespace Zl.AutoUpgrade.Core
             return client;
         }
 
-        private PackageVersionInfo GetNeedVersionInfo(FtpClient client)
+        private PackageVersionInfo GetDifferenceVersionInfoWithServer(FtpClient client)
         {
             if (!client.FileExists("/" + VersionFileName))
             {
@@ -213,35 +216,6 @@ namespace Zl.AutoUpgrade.Core
             return this._versionService.CompareDifference(_targetFolder, pvi);
         }
 
-
-
-        private void Rollback()
-        {
-            CopyDirectorySkipError(CurVersionBakFolder, this._targetFolder);
-        }
-
-        private static void CopyDirectorySkipError(String sourcePath, String destinationPath)
-        {
-            DirectoryInfo info = new DirectoryInfo(sourcePath);
-            Directory.CreateDirectory(destinationPath);
-            foreach (FileSystemInfo fsi in info.GetFileSystemInfos())
-            {
-                String destName = Path.Combine(destinationPath, fsi.Name);
-                if (fsi is System.IO.FileInfo)
-                    try
-                    {
-                        File.Copy(fsi.FullName, destName);
-                    }
-                    catch (Exception)
-                    {
-                    }
-                else
-                {
-                    Directory.CreateDirectory(destName);
-                    CopyDirectorySkipError(fsi.FullName, destName);
-                }
-            }
-        }
         /// <summary>
         /// 复制文件夹（及文件夹下所有子文件夹和文件） 
         /// </summary>
