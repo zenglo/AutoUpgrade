@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Zl.AutoUpgrade.Shared;
+using System.Security.Authentication;
 
 namespace Zl.AutoUpgrade.Core
 {
@@ -14,8 +15,10 @@ namespace Zl.AutoUpgrade.Core
     {
         private string _targetFolder;
         private string _ftpServerIp;
-        private string _uid;
-        private string _pwd;
+        private string _ftpUser;
+        private string _ftpPassword;
+        private SslProtocols _ftpSslProtocols;
+        private VersionService _versionService;
         private const string VersionFileName = "versionInfo.xml";
         private static readonly string NewVersionTempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "newVersionTemp");
         private static readonly string CurVersionBakFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "curVersionBak");
@@ -29,12 +32,14 @@ namespace Zl.AutoUpgrade.Core
         public event EventHandler<UpgradeEndedArgs> UpgradeEnded;
 
 
-        public UpgradeService(string targetFolder, string ftpServerIp, string uid, string pwd)
+        public UpgradeService(UpgradeConfig config)
         {
-            this._targetFolder = targetFolder;
-            this._ftpServerIp = ftpServerIp;
-            this._uid = uid;
-            this._pwd = pwd;
+            this._targetFolder = config.TargetFolder;
+            this._ftpServerIp = config.FtpHost;
+            this._ftpUser = config.FtpUser;
+            this._ftpPassword = config.FtpPassword;
+            this._ftpSslProtocols = config.FtpSslProtocols;
+            _versionService = new VersionService(config.VersionInfoSecretKey ?? "Zl.AutoUpgrade.SecretKey");
         }
 
         public void StartAutoDetect()
@@ -165,7 +170,8 @@ namespace Zl.AutoUpgrade.Core
         private FtpClient CreateFtpClient()
         {
             FtpClient client = new FtpClient(_ftpServerIp);
-            client.Credentials = new NetworkCredential(_uid, _pwd);
+            client.Credentials = new NetworkCredential(_ftpUser, _ftpPassword);
+            client.SslProtocols = _ftpSslProtocols;
             return client;
         }
 
@@ -181,7 +187,7 @@ namespace Zl.AutoUpgrade.Core
                 return null;
             }
             PackageVersionInfo pvi = XmlSerializer.ToObject<PackageVersionInfo>(versionData);
-            return VersionService.CompareDifference(_targetFolder, pvi);
+            return this._versionService.CompareDifference(_targetFolder, pvi);
         }
 
 

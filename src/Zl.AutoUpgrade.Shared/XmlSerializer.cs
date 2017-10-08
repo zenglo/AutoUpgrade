@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Zl.AutoUpgrade.Shared
 {
-    public static class XmlSerializer
+    static class XmlSerializer
     {
         public static byte[] ToBinary(object obj)
         {

@@ -9,21 +9,31 @@ using System.Xml.Serialization;
 namespace Zl.AutoUpgrade.Shared
 {
 
-    public class VersionService
+    class VersionService
     {
-        private const string CspKey = "Zl.AutoUpgrade";
+        private string SecretKey = "Zl.AutoUpgrade.SecretKey";
+
         /// <summary>
-        /// 或许和远程不同的文件
+        /// 构造版本服务
+        /// </summary>
+        /// <param name="secretKey">版本信息秘钥，用语加密版本信息</param>
+        public VersionService(string secretKey)
+        {
+            SecretKey = secretKey;
+        }
+
+        /// <summary>
+        /// 对比本地文件与远程文件的版本信息，得出需要升级的所有文件版本信息
         /// </summary>
         /// <param name="localFolderPath"></param>
         /// <param name="romotePackageVersionInfo"></param>
         /// <returns></returns>
-        public static PackageVersionInfo CompareDifference(string localFolderPath, PackageVersionInfo romotePackageVersionInfo)
+        public PackageVersionInfo CompareDifference(string localFolderPath, PackageVersionInfo romotePackageVersionInfo)
         {
             long totalLength = 0;
             List<FileVersionInfo> files = new List<FileVersionInfo>();
             CspParameters param = new CspParameters();
-            param.KeyContainerName = CspKey;
+            param.KeyContainerName = SecretKey;
             DirectoryInfo directoryInfo = new DirectoryInfo(localFolderPath + "/");
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(param))
             {
@@ -54,12 +64,18 @@ namespace Zl.AutoUpgrade.Shared
             }
         }
 
-        public static PackageVersionInfo ComputeVersionInfo(string folderPath, params string[] ignoreFileNames)
+        /// <summary>
+        /// 计算本地指定目录的文件版本信息
+        /// </summary>
+        /// <param name="folderPath"></param>
+        /// <param name="ignoreFileNames"></param>
+        /// <returns></returns>
+        public PackageVersionInfo ComputeVersionInfo(string folderPath, params string[] ignoreFileNames)
         {
             long totalLength = 0;
             List<FileVersionInfo> files = new List<FileVersionInfo>();
             CspParameters param = new CspParameters();
-            param.KeyContainerName = CspKey;
+            param.KeyContainerName = SecretKey;
             DirectoryInfo directoryInfo = new DirectoryInfo(folderPath + "/");
             using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(param))
             {
@@ -90,7 +106,7 @@ namespace Zl.AutoUpgrade.Shared
                 }
             }
         }
-        public static string ComputeEmd5(FileInfo fileInfo, MD5 md5, RSACryptoServiceProvider dsa)
+        private static string ComputeEmd5(FileInfo fileInfo, MD5 md5, RSACryptoServiceProvider dsa)
         {
             using (FileStream fs = fileInfo.OpenRead())
             {

@@ -54,7 +54,7 @@ namespace Zl.AutoUpgrade.Core
     public class NewVersionDetectedArgs : EventArgs
     {
         /// <summary>
-        /// 随后进行升级
+        /// 随后是否需要进行升级
         /// </summary>
         public bool ThenUpgrade { get; set; }
     }

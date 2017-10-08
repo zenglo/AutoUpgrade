@@ -34,6 +34,9 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Args, Version=1.1.0.37402, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Args.1.1.2\lib\Net40\Args.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +54,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
