@@ -23,6 +23,39 @@ namespace Zl.AutoUpgrade.Shared
         }
 
         /// <summary>
+        /// 对比版本包中的文件emd5值是否完全与指定文件夹中对应文件相同，鉴别是否中途遭恶意更改
+        /// </summary>
+        /// <param name="localFolderPath"></param>
+        /// <param name="romotePackageVersionInfo"></param>
+        /// <returns></returns>
+        public bool Verify(PackageVersionInfo romotePackageVersionInfo, string localFolderPath)
+        {
+            CspParameters param = new CspParameters();
+            param.KeyContainerName = SecretKey;
+            DirectoryInfo directoryInfo = new DirectoryInfo(localFolderPath + "/");
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider(param))
+            {
+                using (MD5 md5 = new MD5CryptoServiceProvider())
+                {
+                    foreach (var item in romotePackageVersionInfo.Files)
+                    {
+                        string filePath = System.IO.Path.Combine(directoryInfo.FullName, item.File.TrimStart('\\', '/'));
+                        FileInfo fileInfo = new FileInfo(filePath);
+                        if (File.Exists(filePath))
+                        {
+                            return false;
+                        }
+                        string emd5Str = ComputeEmd5(fileInfo, md5, rsa);
+                        if (emd5Str != item.Emd5)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+        /// <summary>
         /// 对比本地文件与远程文件的版本信息，得出需要升级的所有文件版本信息
         /// </summary>
         /// <param name="localFolderPath"></param>
@@ -41,7 +74,7 @@ namespace Zl.AutoUpgrade.Shared
                 {
                     foreach (var item in romotePackageVersionInfo.Files)
                     {
-                        string filePath = System.IO.Path.Combine(localFolderPath, item.File.TrimStart('\\', '/'));
+                        string filePath = System.IO.Path.Combine(directoryInfo.FullName, item.File.TrimStart('\\', '/'));
                         FileInfo fileInfo = new FileInfo(filePath);
                         string emd5Str = ComputeEmd5(fileInfo, md5, rsa);
                         if (File.Exists(filePath))

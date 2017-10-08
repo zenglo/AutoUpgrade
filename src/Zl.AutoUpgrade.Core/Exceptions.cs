@@ -23,6 +23,12 @@ namespace Zl.AutoUpgrade.Core
         {
         }
     }
+    public class UnlawfulException : UpgradeException
+    {
+        public UnlawfulException(string message, Exception inner) : base(message, inner)
+        {
+        }
+    }
     public class DownFileException : UpgradeException
     {
         public DownFileException(string message, Exception inner) : base(message, inner)

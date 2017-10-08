@@ -102,7 +102,30 @@ namespace Zl.AutoUpgrade.Core
                 this.RaiseUpgradeEnded(msg, nexc);
                 throw nexc;
             }
-            //备份当前版本，占比 4%
+            //验证文件合法性，防篡改，占比 1%
+            try
+            {
+                if (!this._versionService.Verify(needUpdateVersionInfo, newVersionTemp.FullName))
+                {
+                    string msg = "新版文件不合法";
+                    Exception nexc = new UnlawfulException(msg, null);
+                    this.RaiseUpgradeEnded(msg, nexc);
+                    throw nexc;
+                }
+                this.RaiseUpgradeProgress(percent += 0.01f);
+            }
+            catch (UnlawfulException)
+            {
+                throw;
+            }
+            catch (Exception exc)
+            {
+                string msg = "新版文件验证出错";
+                Exception nexc = new UnlawfulException(msg, exc);
+                this.RaiseUpgradeEnded(msg, nexc);
+                throw nexc;
+            }
+            //备份当前版本，占比 3%
             try
             {
                 DirectoryInfo bakFolder = new DirectoryInfo(CurVersionBakFolder);
@@ -117,7 +140,7 @@ namespace Zl.AutoUpgrade.Core
                     Directory.CreateDirectory(Directory.GetParent(newFilePath).FullName);
                     File.Copy(filePath, newFilePath, true);
                 }
-                this.RaiseUpgradeProgress(percent += 0.04f);
+                this.RaiseUpgradeProgress(percent += 0.03f);
             }
             catch (Exception exc)
             {

@@ -27,7 +27,7 @@ namespace Zl.AutoUpgrade.VersionInfoBuilder
                     return;
                 }
                 Console.WriteLine($"正在生成...");
-                Console.WriteLine($"目标目录：{command.TargetFolder}");
+                Console.WriteLine($"目标文件夹：{command.TargetFolder}");
                 Console.WriteLine($"秘钥：{command.SecretKey}");
                 VersionService versionService = new VersionService(command.SecretKey);
                 PackageVersionInfo info = versionService.ComputeVersionInfo(command.TargetFolder,
@@ -44,10 +44,10 @@ namespace Zl.AutoUpgrade.VersionInfoBuilder
             }
         }
 
-        [System.ComponentModel.Description("升级包版本信息生成器工具.")]
+        [System.ComponentModel.Description("升级包版本文件生成器工具.")]
         class CommandObject
         {
-            [Description("要生成版本信息的升级包目录，生成版本信息后的目录才可作为升级包目录供升级")]
+            [Description("要生成版本文件的目标文件夹，生成版本文件后的文件夹才可作为升级包供升级")]
             public string TargetFolder { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
             [Description("版本信息秘钥，客户端只有与本生成器使用的秘钥一致时才可正常升级本生成器生成的版本升级包")]
             public string SecretKey { get; set; } = "Zl.AutoUpgrade.SecretKey";
