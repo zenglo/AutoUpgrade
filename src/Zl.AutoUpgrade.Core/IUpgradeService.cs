@@ -85,6 +85,7 @@ namespace Zl.AutoUpgrade.Core
 
         public UpgradeEndedArgs(string errorMessage, Exception errorException)
         {
+            this.EndedType = UpgradeEndedType.ErrorAborted;
             this.ErrorMessage = errorMessage;
             this.ErrorException = errorException;
         }

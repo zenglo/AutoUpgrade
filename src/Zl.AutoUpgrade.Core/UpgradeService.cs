@@ -79,12 +79,26 @@ namespace Zl.AutoUpgrade.Core
         {
             this.RaiseUpgradeStarted();
             float percent = 0f;
-            this.RaiseUpgradeProgress(percent += 0.01f);
-            DirectoryInfo newVersionTemp = Directory.CreateDirectory(NewVersionTempFolder);
+            try
+            {
+                Directory.CreateDirectory(_targetFolder);
+                var currVersionInfo = this._versionService.ComputeVersionInfo(_targetFolder);
+                XmlSerializer.SaveToFile(diffVersionInfo, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "versionInfo_diff.xml"));
+                XmlSerializer.SaveToFile(currVersionInfo, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "versionInfo_curr.xml"));
+                this.RaiseUpgradeProgress(percent += 0.01f);
+            }
+            catch (Exception exc)
+            {
+                string msg = "计算版本信息文件出错";
+                Exception nexc = new CreateVersionInfoException(msg, exc);
+                this.RaiseUpgradeEnded(msg, nexc);
+                throw nexc;
+            }
             //下载新版本，占比 90%
             string curentDownFile = string.Empty;
             try
             {
+                DirectoryInfo newVersionTemp = Directory.CreateDirectory(NewVersionTempFolder);
                 client.RetryAttempts = 3;
                 long downLength = 0;
                 foreach (var item in diffVersionInfo.Files)
@@ -94,6 +108,7 @@ namespace Zl.AutoUpgrade.Core
                     downLength += item.Length;
                     this.RaiseUpgradeProgress(percent += (float)Math.Round((downLength * 1.0 / diffVersionInfo.TotalLength * 0.9), 2));
                 }
+                XmlSerializer.SaveToFile(diffVersionInfo, Path.Combine(newVersionTemp.FullName, VersionFileName));
             }
             catch (Exception exc)
             {
@@ -105,7 +120,7 @@ namespace Zl.AutoUpgrade.Core
             //验证文件合法性，防篡改，占比 1%
             try
             {
-                if (!this._versionService.Verify(diffVersionInfo, newVersionTemp.FullName))
+                if (!this._versionService.Verify(diffVersionInfo, NewVersionTempFolder))
                 {
                     string msg = "新版文件不合法";
                     Exception nexc = new UnlawfulException(msg, null);
@@ -134,7 +149,7 @@ namespace Zl.AutoUpgrade.Core
             catch (Exception exc)
             {
                 string msg = "版本当前版本出错";
-                Exception nexc = new BakFileException(msg, exc);
+                Exception nexc = new BackupFileException(msg, exc);
                 this.RaiseUpgradeEnded(msg, nexc);
                 throw nexc;
             }

@@ -76,9 +76,9 @@ namespace Zl.AutoUpgrade.Shared
                     {
                         string filePath = System.IO.Path.Combine(directoryInfo.FullName, item.File.TrimStart('\\', '/'));
                         FileInfo fileInfo = new FileInfo(filePath);
-                        string emd5Str = ComputeEmd5(fileInfo, md5, rsa);
                         if (File.Exists(filePath))
                         {
+                            string emd5Str = ComputeEmd5(fileInfo, md5, rsa);
                             if (emd5Str == item.Emd5)
                             {
                                 continue;
@@ -87,12 +87,13 @@ namespace Zl.AutoUpgrade.Shared
                         files.Add(item);
                         totalLength += item.Length;
                     }
-                    return new PackageVersionInfo
+                    var diff = new PackageVersionInfo
                     {
                         Files = files.ToArray(),
                         TotalLength = totalLength,
                         PackageDate = romotePackageVersionInfo.PackageDate
                     };
+                    return diff;
                 }
             }
         }

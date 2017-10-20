@@ -23,6 +23,10 @@ namespace Zl.AutoUpgrade.Core
         {
         }
     }
+
+    /// <summary>
+    /// 非法文件
+    /// </summary>
     public class UnlawfulException : UpgradeException
     {
         public UnlawfulException(string message, Exception inner) : base(message, inner)
@@ -35,9 +39,15 @@ namespace Zl.AutoUpgrade.Core
         {
         }
     }
-    public class BakFileException : UpgradeException
+    public class BackupFileException : UpgradeException
     {
-        public BakFileException(string message, Exception inner) : base(message, inner)
+        public BackupFileException(string message, Exception inner) : base(message, inner)
+        {
+        }
+    }
+    public class CreateVersionInfoException : UpgradeException
+    {
+        public CreateVersionInfoException(string message, Exception inner) : base(message, inner)
         {
         }
     }
