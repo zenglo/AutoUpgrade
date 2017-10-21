@@ -21,7 +21,7 @@ namespace Zl.AutoUpgrade.Core
         private VersionService _versionService;
         private const string VersionFileName = "versionInfo.xml";
         private static readonly string NewVersionTempFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "newVersionTemp");
-        private static readonly string CurVersionBakFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "curVersionBak");
+        private static readonly string LastVersionBakFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "lastVersionBak");
 
         public int DetectInterval { get; set; } = 1 * 60 * 1000;
         public bool AutoUpgrade { get; set; } = true;
@@ -143,7 +143,7 @@ namespace Zl.AutoUpgrade.Core
             //备份当前版本，占比 3%
             try
             {
-                CopyVersionFile(diffVersionInfo, this._targetFolder, CurVersionBakFolder);
+                CopyVersionFile(diffVersionInfo, this._targetFolder, LastVersionBakFolder);
                 this.RaiseUpgradeProgress(percent += 0.03f);
             }
             catch (Exception exc)
@@ -164,7 +164,7 @@ namespace Zl.AutoUpgrade.Core
             {
                 try
                 {
-                    CopyVersionFile(diffVersionInfo, CurVersionBakFolder, this._targetFolder);
+                    CopyVersionFile(diffVersionInfo, LastVersionBakFolder, this._targetFolder);
                 }
                 catch (Exception exc1)
                 {
@@ -180,7 +180,8 @@ namespace Zl.AutoUpgrade.Core
             //删除临时文件，占比 1%
             try
             {
-                //Directory.Delete(NewVersionTempFolder, true);
+                Directory.Delete(NewVersionTempFolder, true);
+                Directory.Delete(LastVersionBakFolder, true);
                 this.RaiseUpgradeProgress(percent += 0.01f);
             }
             catch (Exception exc)
