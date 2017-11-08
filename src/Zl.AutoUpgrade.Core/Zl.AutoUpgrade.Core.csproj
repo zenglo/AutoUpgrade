@@ -49,10 +49,12 @@
     <Compile Include="..\ComponentInfo.cs">
       <Link>Properties\ComponentInfo.cs</Link>
     </Compile>
+    <Compile Include="AutoUpdater.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="IUpgradeService.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UpgradeCmdArg.cs" />
     <Compile Include="UpgradeConfig.cs" />
     <Compile Include="UpgradeService.cs" />
   </ItemGroup>

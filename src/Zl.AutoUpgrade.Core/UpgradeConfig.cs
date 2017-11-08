@@ -9,7 +9,7 @@ namespace Zl.AutoUpgrade.Core
     public class UpgradeConfig
     {
         /// <summary>
-        /// 要升级的目标目录
+        /// 要升级的目标目录，缺省程序所在目录
         /// </summary>
         public string TargetFolder { get; set; }
         /// <summary>
@@ -34,7 +34,7 @@ namespace Zl.AutoUpgrade.Core
         public bool AutoUpgrade { get; set; }
 
         /// <summary>
-        /// 版本信息秘钥，只有与生成升级版本信息的生成器使用的秘钥一致时才可生成
+        /// 版本信息秘钥，只有与生成升级版本信息的生成器使用的秘钥一致时才可生成，缺省为"Zl.AutoUpgrade.SecretKey"
         /// </summary>
         public string VersionInfoSecretKey { get; set; }
     }

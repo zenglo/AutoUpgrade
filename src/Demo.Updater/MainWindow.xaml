@@ -1,0 +1,14 @@
+﻿<Window x:Class="Demo.Updater.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Demo.Updater"
+        mc:Ignorable="d"
+        Title="Updater" Height="141" Width="363" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid>
+        <ProgressBar x:Name="probar" Height="26" Margin="10,36,10,0" VerticalAlignment="Top"/>
+        <TextBlock x:Name="txtlab" HorizontalAlignment="Left" Margin="10,16,0,0" TextWrapping="Wrap" Text="正在检查更新, 请稍后..." VerticalAlignment="Top"/>
+        <Button Content="取消升级" HorizontalAlignment="Left" Margin="139,76,0,0" VerticalAlignment="Top" Width="85" Height="24" Click="Button_Click"/>
+    </Grid>
+</Window>

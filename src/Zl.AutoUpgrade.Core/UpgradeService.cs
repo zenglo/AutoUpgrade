@@ -34,7 +34,14 @@ namespace Zl.AutoUpgrade.Core
 
         public UpgradeService(UpgradeConfig config)
         {
-            this._targetFolder = config.TargetFolder;
+            if (string.IsNullOrEmpty(config.TargetFolder))
+            {
+                this._targetFolder = AppDomain.CurrentDomain.BaseDirectory;
+            }
+            else
+            {
+                this._targetFolder = config.TargetFolder;
+            }
             this._ftpServerIp = config.FtpHost;
             this._ftpUser = config.FtpUser;
             this._ftpPassword = config.FtpPassword;
