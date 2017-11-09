@@ -12,6 +12,8 @@ namespace Zl.AutoUpgrade.Core
     public static class AutoUpdater
     {
         private static UpgradeCmdArg _upgradeCmdArg;
+        private static Mutex _updaterMutex;
+        private const string UpdatedSign = "UPDATEDSIGN";
 
         /// <summary>
         /// Updater是否正在运行
@@ -19,13 +21,9 @@ namespace Zl.AutoUpgrade.Core
         /// <returns></returns>
         public static bool IsUpdaterRunning()
         {
-            bool updating = false;
-            Mutex appMutex = new Mutex(true, "Zl.AutoUpgrade.Core.AutoUpdater", out updating);
-            if (updating)
-            {
-                return true;
-            }
-            return false;
+            bool notUpdating = false;
+            _updaterMutex = new Mutex(true, "Zl.AutoUpgrade.Core.AutoUpdater", out notUpdating);
+            return !notUpdating;
         }
 
         /// <summary>
@@ -34,7 +32,7 @@ namespace Zl.AutoUpgrade.Core
         /// <param name="upgradeConfig">升级配置</param>
         /// <param name="updaterExeFileName">自定义的Updater程序集</param>
         /// <returns>是否需要升级且已启动升级</returns>
-        public static bool TryUpgrade(UpgradeConfig upgradeConfig, Assembly updaterExeAssembly)
+        public static UpgradeStatus TryUpgrade(UpgradeConfig upgradeConfig, Assembly updaterExeAssembly)
         {
             return TryUpgrade(upgradeConfig, updaterExeAssembly.Location);
         }
@@ -45,41 +43,49 @@ namespace Zl.AutoUpgrade.Core
         /// <param name="upgradeConfig">升级配置</param>
         /// <param name="updaterExeFileName">自定义的Updater Exe文件路径</param>
         /// <returns>是否需要升级且已启动升级</returns>
-        public static bool TryUpgrade(UpgradeConfig upgradeConfig, string updaterExeFileName)
+        public static UpgradeStatus TryUpgrade(UpgradeConfig upgradeConfig, string updaterExeFileName)
         {
-            if (IsUpdaterRunning())
-            {
-                return true;
-            }
             FileInfo fileInfo = new FileInfo(updaterExeFileName);
             if (!fileInfo.Exists)
             {
                 throw new Exception("Can't found the updater exe");
             }
-            IUpgradeService upgradeService = new UpgradeService(upgradeConfig);
-            if (upgradeService.DetectNewVersion())
+            if (IsUpdaterRunning())
             {
-                if (string.IsNullOrEmpty(upgradeConfig.TargetFolder))
-                {
-                    upgradeConfig.TargetFolder = AppDomain.CurrentDomain.BaseDirectory;
-                }
-                else
-                {
-                    upgradeConfig.TargetFolder = new DirectoryInfo(upgradeConfig.TargetFolder).FullName;
-                }
-                UpgradeCmdArg arg = new UpgradeCmdArg()
-                {
-                    Config = upgradeConfig,
-                    ManagedExeFileName = System.Reflection.Assembly.GetEntryAssembly().Location,
-                    ManagedExeArguments = string.Join(" ", Environment.GetCommandLineArgs() ?? new string[0])
-                };
-                System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-                startInfo.FileName = fileInfo.FullName;
-                startInfo.Arguments = "\"" + Convert.ToBase64String(XmlSerializer.ToBinary(arg)) + "\"";
-                System.Diagnostics.Process.Start(startInfo);
-                return true;
+                return UpgradeStatus.Upgrading;
             }
-            return false;
+            var args = Environment.GetCommandLineArgs().ToList();
+            args.RemoveAt(0);
+            if (args.LastOrDefault() == UpdatedSign)
+            {
+                return UpgradeStatus.Ended;
+            }
+
+            IUpgradeService upgradeService = new UpgradeService(upgradeConfig);
+
+            if (!upgradeService.DetectNewVersion())
+            {
+                return UpgradeStatus.NoNewVersion;
+            }
+            if (string.IsNullOrEmpty(upgradeConfig.TargetFolder))
+            {
+                upgradeConfig.TargetFolder = AppDomain.CurrentDomain.BaseDirectory;
+            }
+            else
+            {
+                upgradeConfig.TargetFolder = new DirectoryInfo(upgradeConfig.TargetFolder).FullName;
+            }
+            UpgradeCmdArg arg = new UpgradeCmdArg()
+            {
+                Config = upgradeConfig,
+                ManagedExeFileName = System.Reflection.Assembly.GetEntryAssembly().Location,
+                ManagedExeArguments = string.Join(" ", args)
+            };
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.FileName = fileInfo.FullName;
+            startInfo.Arguments = "\"" + Convert.ToBase64String(XmlSerializer.ToBinary(arg)) + "\"";
+            System.Diagnostics.Process.Start(startInfo);
+            return UpgradeStatus.Started;
         }
 
         /// <summary>
@@ -90,8 +96,9 @@ namespace Zl.AutoUpgrade.Core
         public static bool TryResolveUpgradeService(out IUpgradeService upgradeService)
         {
             upgradeService = null;
-            string[] runArgs = Environment.GetCommandLineArgs();
-            if (runArgs == null || runArgs.Length == 0)
+            var runArgs = Environment.GetCommandLineArgs().ToList();
+            runArgs.RemoveAt(0);
+            if (runArgs.Count == 0)
                 return false;
             try
             {
@@ -111,9 +118,11 @@ namespace Zl.AutoUpgrade.Core
         /// </summary>
         public static void RunManagedExe()
         {
+            _updaterMutex.ReleaseMutex();
+            _updaterMutex.Dispose();
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.FileName = _upgradeCmdArg.ManagedExeFileName;
-            startInfo.Arguments = _upgradeCmdArg.ManagedExeArguments;
+            startInfo.Arguments = _upgradeCmdArg.ManagedExeArguments + " " + UpdatedSign;
             System.Diagnostics.Process.Start(startInfo);
         }
     }

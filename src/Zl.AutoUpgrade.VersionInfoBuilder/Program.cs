@@ -29,10 +29,15 @@ namespace Zl.AutoUpgrade.VersionInfoBuilder
                 Console.WriteLine($"正在生成...");
                 Console.WriteLine($"目标文件夹：{command.TargetFolder}");
                 Console.WriteLine($"秘钥：{command.SecretKey}");
+                Console.WriteLine($"忽略文件：{ ((command.Ignore == null || command.Ignore.Count == 0) ? "无" : string.Join(", ", command.Ignore))}");
                 VersionService versionService = new VersionService(command.SecretKey);
+                if (command.Ignore == null)
+                    command.Ignore = new List<string>(2);
+                command.Ignore.Add(Path.GetFileNameWithoutExtension(typeof(Program).Assembly.Location));
+                command.Ignore.Add(versionFileName);
+                command.Ignore.Add("Zl.AutoUpgrade.Core");
                 PackageVersionInfo info = versionService.ComputeVersionInfo(command.TargetFolder,
-                    Path.GetFileName(typeof(Program).Assembly.Location),
-                    versionFileName);
+                  command.Ignore.ToArray());
                 XmlSerializer.SaveToFile(info, System.IO.Path.Combine(command.TargetFolder, versionFileName));
                 Console.WriteLine($"生成完毕.");
             }
@@ -51,6 +56,9 @@ namespace Zl.AutoUpgrade.VersionInfoBuilder
             public string TargetFolder { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
             [Description("版本信息秘钥，客户端只有与本生成器使用的秘钥一致时才可正常升级本生成器生成的版本升级包")]
             public string SecretKey { get; set; } = "Zl.AutoUpgrade.SecretKey";
+
+            [Description("目标文件夹中要忽略的文件，多个用空格间隔")]
+            public List<string> Ignore { get; set; }
 
             [Description("查看帮助")]
             public string Help { get; set; }

@@ -104,7 +104,7 @@ namespace Zl.AutoUpgrade.Shared
         /// <param name="folderPath"></param>
         /// <param name="ignoreFileNames"></param>
         /// <returns></returns>
-        public PackageVersionInfo ComputeVersionInfo(string folderPath, params string[] ignoreFileNames)
+        public PackageVersionInfo ComputeVersionInfo(string folderPath, params string[] ignoreFileNameKeys)
         {
             long totalLength = 0;
             List<FileVersionInfo> files = new List<FileVersionInfo>();
@@ -117,7 +117,8 @@ namespace Zl.AutoUpgrade.Shared
                 {
                     RecursionFile(folderPath, null, filePath =>
                     {
-                        if (ignoreFileNames != null && ignoreFileNames.Any(m => filePath.ToLower().EndsWith(m.ToLower())))
+                        if (ignoreFileNameKeys != null
+                        && ignoreFileNameKeys.Any(m => filePath.ToLower().Contains(m.ToLower())))
                         {
                             return;
                         }

@@ -20,14 +20,10 @@ namespace Demo.Updater
             {
                 return;
             }
-            if (new MainWindow().ShowDialog() != true)
-            {
-                //取消升级
-
-            }
-            //var app = new Application();
-            //app.ShutdownMode = ShutdownMode.OnMainWindowClose;
-            //app.Run();
+            //等待小会，避免宿主程序尚未关闭而无法覆盖升级
+            Thread.Sleep(1000);
+            new MainWindow().ShowDialog();
+            AutoUpdater.RunManagedExe();
         }
     }
 }

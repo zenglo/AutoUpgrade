@@ -57,6 +57,7 @@
     <Compile Include="UpgradeCmdArg.cs" />
     <Compile Include="UpgradeConfig.cs" />
     <Compile Include="UpgradeService.cs" />
+    <Compile Include="UpgradeStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
