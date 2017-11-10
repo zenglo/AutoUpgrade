@@ -4,6 +4,7 @@ AutoUpgrade 是用C#语言开发，基于 .Net Framework4.0 实现的，支持 W
 
 ## 组件组成
 AutoUpgrade 组件包含两个子组件。  
+
 子组件 | 对应的.Net项目 | 编译输出 | 说明
 ---------|----------|---------|---------
 升级组件 | Zl.AutoUpgrade.Core | Zl.AutoUpgrade.Core.dll | 升级功能类库，供升级程序调用来完成升级任务。
@@ -90,6 +91,7 @@ public static void Main(string[] args)
 升级补丁文件必须通过`VersionInfoBuilder.exe`工具生成对应的版本信息文件后才可被升级组件正常升级。  
 `VersionInfoBuilder.exe`是一个命令行工具，最简单生成版本信息文件的方式是直接将VersionInfoBuilder.exe放入升级补丁文件所在文件夹，双击运行VersionInfoBuilder.exe即可自动生成。  
 VersionInfoBuilder.exe包含的参数如下：  
+
 参数 | 说明
 ------- | -------
 [/TargetFolder\|/T] | 要生成版本文件的目标文件夹，生成版本文件后的文件夹才可作为升级包供升级
