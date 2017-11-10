@@ -16,15 +16,16 @@ namespace Demo.Client
         [STAThread]
         public static void Main(string[] args)
         {
-            //try
-            //{
+            try
+            {
                 var upgradeStatus = AutoUpdater.TryUpgrade(new UpgradeConfig()
                 {
-                    FtpHost = "127.0.0.1",
-                    FtpUser = "zl",
-                    FtpPassword = "temp",
-                    FtpOverTLS = true
-                }, typeof(Demo.Updater.MainWindow).Assembly);
+                    FtpHost = "127.0.0.1", //ftp server 地址
+                    FtpUser = "zl",// ftp 用户名
+                    FtpPassword = "temp",// ftp 密码
+                    FtpOverTLS = true //是否基于TLS连接
+                }, typeof(Demo.Updater.MainWindow).Assembly //升级程序exe位置或所在的程序集
+                );
                 switch (upgradeStatus)
                 {
                     case UpgradeStatus.Started:
@@ -40,13 +41,12 @@ namespace Demo.Client
                     default:
                         break;
                 }
-            //}
-            //catch (Exception exc)
-            //{
-            //    MessageBox.Show("启动升级程序时遇到错误，跳过本次升级，继续运行！");
-            //}
-
-            //继续运行代码
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show("启动升级程序时遇到错误，跳过本次升级，继续运行！");
+            }
+            //继续用户软件代码
         }
     }
 }
