@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 [assembly: AssemblyTitle("Zl.AutoUpgrade.Core")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("一个非常简单、轻量级的自动升级组件，以Ftp Server作为升级服务器，可自动升级其托管的Windows软件")]
 [assembly: AssemblyConfiguration("")]
 
 // 将 ComVisible 设置为 false 会使此程序集中的类型

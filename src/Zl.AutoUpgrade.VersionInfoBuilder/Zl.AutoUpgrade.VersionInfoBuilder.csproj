@@ -61,8 +61,6 @@
   <ItemGroup>
     <Content Include="app.ico" />
     <None Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems" Label="Shared" />

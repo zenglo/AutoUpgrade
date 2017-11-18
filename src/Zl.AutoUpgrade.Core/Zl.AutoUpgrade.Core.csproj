@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Zl.AutoUpgrade.Core.nuspec" />
   </ItemGroup>
   <Import Project="..\Zl.AutoUpgrade.Shared\Zl.AutoUpgrade.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
