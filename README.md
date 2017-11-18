@@ -1,4 +1,4 @@
-# AutoUpgrade
+# AutoUpgrade [![Build status](https://ci.appveyor.com/api/projects/status/sfg236a8bp7kj2ns/branch/master?svg=true)](https://ci.appveyor.com/project/zenglong/autoupgrade/branch/master) [![NuGet](https://img.shields.io/nuget/v/Zl.AutoUpgrade.Core.svg)](https://www.nuget.org/packages/Zl.AutoUpgrade.Core)
 AutoUpgrade 是一个非常简单、轻量级的自动升级组件，以Ftp Server作为升级服务器，可自动升级托管的用户软件。  
 AutoUpgrade 是用C#语言开发，基于 .Net Framework4.0 实现的，支持 Windows xp sp3 及以上版本的Windows系统。  
 
@@ -100,4 +100,8 @@ VersionInfoBuilder.exe包含的参数如下：
 [/Help\|/H] | 查看帮助
 
 也可在命令行中运行`VersionInfoBuilder.exe /H`查看参数帮助。  
-**注意：不应该将`Zl.AutoUpgrade.Core.dll`和自建的升级程序项目作为升级补丁的一部分，否则会因这两个dll被升级过程运行时依赖而导致总是无法被覆盖升级，从而导致升级失败。**
+**注意：不应该将`Zl.AutoUpgrade.Core.dll`和自建的升级程序项目作为升级补丁的一部分，否则会因这两个dll被升级过程运行时依赖而导致总是无法被覆盖升级，从而导致升级失败。**  
+
+<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/q6NFtNujicHJPWrvRTPNrD5i/zenglo/AutoUpgrade'>
+  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/q6NFtNujicHJPWrvRTPNrD5i/zenglo/AutoUpgrade.svg' />
+</a>
