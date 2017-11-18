@@ -1,4 +1,4 @@
-# AutoUpgrade [![Build status](https://ci.appveyor.com/api/projects/status/sfg236a8bp7kj2ns/branch/master?svg=true)](https://ci.appveyor.com/project/zenglong/autoupgrade/branch/master)
+# AutoUpgrade [![Build status](https://ci.appveyor.com/api/projects/status/sfg236a8bp7kj2ns/branch/master?svg=true)](https://ci.appveyor.com/project/zenglong/autoupgrade/branch/master) [![NuGet](https://img.shields.io/nuget/v/Zl.AutoUpgrade.Core.svg)](https://www.nuget.org/packages/Zl.AutoUpgrade.Core)
 AutoUpgrade 是一个非常简单、轻量级的自动升级组件，以Ftp Server作为升级服务器，可自动升级托管的用户软件。  
 AutoUpgrade 是用C#语言开发，基于 .Net Framework4.0 实现的，支持 Windows xp sp3 及以上版本的Windows系统。  
 
