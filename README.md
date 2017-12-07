@@ -101,7 +101,3 @@ VersionInfoBuilder.exe包含的参数如下：
 
 也可在命令行中运行`VersionInfoBuilder.exe /H`查看参数帮助。  
 **注意：不应该将`Zl.AutoUpgrade.Core.dll`和自建的升级程序项目作为升级补丁的一部分，否则会因这两个dll被升级过程运行时依赖而导致总是无法被覆盖升级，从而导致升级失败。**  
-
-<a target='_blank' rel='nofollow' href='https://app.codesponsor.io/link/q6NFtNujicHJPWrvRTPNrD5i/zenglo/AutoUpgrade'>
-  <img alt='Sponsor' width='888' height='68' src='https://app.codesponsor.io/embed/q6NFtNujicHJPWrvRTPNrD5i/zenglo/AutoUpgrade.svg' />
-</a>
